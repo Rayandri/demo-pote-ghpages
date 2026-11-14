@@ -319,7 +319,7 @@
       const sec = n / 2 / rate;
       $("#calc-time").textContent = human(sec);
       $("#calc-say").textContent = say(sec);
-      $("#calc-math").textContent = `${label} = ${fmtN(n)} combinaisons ÷ 2 en moyenne ÷ ${fmtN(rate)} essais/s (${NAMES[state.who]})`;
+      $("#calc-math").textContent = `${fmtN(n)} combinaisons · ${fmtN(rate)} essais par seconde`;
     }
     box.querySelectorAll(".seg").forEach((seg) => seg.addEventListener("click", (e) => {
       const b = e.target.closest("button");
