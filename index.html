@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Décisions · GitHub Pages</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.gate input { font-size: 1.6rem; letter-spacing: .5em; text-align: center; max-width: 200px; }
+.levels { margin: 0; padding-left: 20px; }
+.levels li { margin-bottom: 10px; }
+code.hash { word-break: break-all; font-size: .8rem; }
+.crack-out { font-family: ui-monospace, monospace; font-size: .9rem; margin-top: 8px; min-height: 1.4em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="host"><span class="badge">GitHub Pages</span><span>Fichiers statiques servis par GitHub</span> <a href="https://demo-pote-hub.vercel.app">← retour au comparatif</a></div>
+  <h1>Carnet de décisions</h1>
+  <p class="sub">La même mini-app sur les trois hébergeurs. Ici : un site statique, données dans un fichier.</p>
+  <div class="card proscons">
+    <div class="pro"><h3>Avantages</h3><ul><li>Gratuit, sans limite de durée</li><li>Rien à maintenir : pas de serveur</li><li>Les données sont versionnées dans git (historique de chaque modif)</li><li>Si GitHub ferme, on redéploie ailleurs en 5 minutes</li></ul></div>
+    <div class="con"><h3>Défauts</h3><ul><li>Le site est forcément public (même avec un compte payant)</li><li>Pas de vraie connexion : le « code » se vérifie dans ton navigateur</li><li>Lecture seule : personne ne peut voter ni ajouter depuis le site</li><li>Modifier les données = éditer un fichier sur GitHub</li></ul></div>
+  </div>
+
+  <div id="gate" class="card gate">
+    <h2>🔒 Entre le code</h2>
+    <form id="gate-form">
+      <input id="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="••••" required autocomplete="off">
+      <button class="primary">Entrer</button>
+      <div class="error" id="gate-err"></div>
+    </form>
+  </div>
+
+  <div id="app"></div>
+
+  <div class="card">
+    <h2>Comment ce code protège la page ? (spoiler : pas vraiment)</h2>
+    <ol class="levels">
+      <li><strong>Code en clair dans le HTML</strong> : clic droit → « Inspecter », et on le lit directement. Zéro protection.</li>
+      <li><strong>Code haché (ce qu'on fait ici)</strong> : la page ne contient que l'empreinte SHA-256 du code,
+        <code class="hash">f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb</code>. On ne peut pas « inverser » un hash… mais avec 4 chiffres il n'y a que
+        10 000 possibilités : on les essaie toutes en une fraction de seconde.
+        <div class="actions"><button id="crack">💥 Casser le code</button></div>
+        <div class="crack-out" id="crack-out"></div></li>
+      <li><strong>Et de toute façon</strong> : le hash protège la <em>porte</em>, pas le contenu. Les données sont dans
+        <a href="data.json"><code>data.json</code></a>, lisible par n'importe qui, comme tout le repo GitHub.</li>
+    </ol>
+    <p class="meta">Conclusion : sur GitHub Pages, tout est public. Parfait pour une vitrine ou une démo, jamais pour du confidentiel.
+      Pour une vraie connexion, il faut un serveur qui vérifie le mot de passe — voir les versions Vercel et Raspberry.</p>
+  </div>
+</div>
+<script>
+window.DEMO = { mode: "static", login: "none" };
+const PIN_HASH = "f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb"; // SHA-256 du code à 4 chiffres, visible par tous
+
+async function sha256(text) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function unlock() {
+  document.getElementById("gate").remove();
+  const s = document.createElement("script");
+  s.src = "app.js";
+  document.body.appendChild(s);
+}
+
+document.getElementById("gate-form").onsubmit = async (e) => {
+  e.preventDefault();
+  const pin = document.getElementById("pin").value;
+  if ((await sha256(pin)) === PIN_HASH) unlock();
+  else document.getElementById("gate-err").textContent = "Mauvais code";
+};
+
+document.getElementById("crack").onclick = async () => {
+  const out = document.getElementById("crack-out");
+  out.textContent = "Essai de 0000 à 9999…";
+  const t0 = performance.now();
+  for (let i = 0; i < 10000; i++) {
+    const pin = String(i).padStart(4, "0");
+    if ((await sha256(pin)) === PIN_HASH) {
+      const ms = Math.round(performance.now() - t0);
+      out.textContent = `Trouvé : ${pin} — après ${i + 1} essais, en ${ms} ms.`;
+      document.getElementById("pin").value = pin;
+      return;
+    }
+  }
+  out.textContent = "Pas trouvé (étrange !)";
+};
+</script>
+</body>
+</html>

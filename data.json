@@ -1,0 +1,20 @@
+{
+  "proposals": [
+    {
+      "id": 2,
+      "title": "Choisir un hébergeur pour le site",
+      "description": "On compare GitHub Pages, Vercel et une Raspberry à la maison.",
+      "author": "Rayan",
+      "created_at": "2026-11-14T10:00:00Z",
+      "votes": [{ "voter": "Rayan", "value": 1 }]
+    },
+    {
+      "id": 1,
+      "title": "Garder les données dans un simple fichier",
+      "description": "Sur GitHub Pages, ce fichier est la « base de données ». Pour le changer, on l'édite dans le repo.",
+      "author": "Rayan",
+      "created_at": "2026-11-13T18:30:00Z",
+      "votes": []
+    }
+  ]
+}
