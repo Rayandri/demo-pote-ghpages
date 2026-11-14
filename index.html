@@ -15,23 +15,47 @@
 </header>
 <main>
   <section class="tile reveal d3">
-    <div class="tile-head"><h2>Le carnet partagé</h2><p>Les mots sont chiffrés. Seul le mot de passe les ouvre.</p></div>
+    <div class="tile-head"><h2>Le carnet partagé</h2><p>Deux couches de protection. Essaie de passer.</p></div>
     <div id="app"><div class="notebook"><ul class="notes"><li class="skeleton"></li><li class="skeleton"></li></ul></div></div>
   </section>
   <section class="tile reveal">
-    <div class="tile-head"><h2>Public, mais illisible</h2></div>
-    <div class="steps"><div class="step"><b>1</b><p>N'importe qui peut télécharger le fichier.</p></div><div class="step"><b>2</b><p>Mais il est chiffré : <code id="cipher">…</code></p></div><div class="step"><b>3</b><p>Sans le mot de passe : des milliards d'années.</p></div></div>
+    <div class="tile-head"><h2>Combien de temps pour casser ?</h2><p>Le site est public : on peut tester chez soi, sans limite. Joue avec.</p></div>
+    <div class="calc" id="calc">
+      <p class="calc-label">L'attaquant</p>
+      <div class="seg" data-k="who">
+        <button data-v="browser">Ce navigateur</button><button data-v="rtx" class="on">Une RTX 4090</button><button data-v="gb300">Un rack GB300</button>
+      </div>
+      <p class="calc-label">Le mot de passe</p>
+      <div class="seg" data-k="pw">
+        <button data-v="4d">4 chiffres</button><button data-v="8l" class="on">8 minuscules</button><button data-v="12c">12 caractères</button><button data-v="20c">20 caractères</button>
+      </div>
+      <div class="calc-out" aria-live="polite">
+        <b id="calc-time">…</b>
+        <span id="calc-say"></span>
+        <small id="calc-math"></small>
+      </div>
+      <p class="note-small">Chaque essai coûte 200 000 tours de calcul : c'est ce qui ralentit l'attaquant. RTX 4090 : ~45 000 essais/s (benchmark hashcat ramené à nos réglages). Rack GB300 NVL72 : 72 puces, estimées à ~2 RTX 4090 chacune, faute de benchmark public.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><b>1</b><p>Le site envoie toute la page au navigateur.</p></div>
+      <div class="step"><b>2</b><p>Le code à 4 chiffres ? On modifie la page, il saute.</p></div>
+      <div class="step"><b>3</b><p>Le chiffrement, lui, tient. Si le mot de passe est long et aléatoire.</p></div>
+    </div>
+  </section>
+  <section class="tile reveal">
+    <div class="tile-head"><h2>Ce qu'on peut y mettre</h2></div>
+    <ul class="tech"><li>HTML, CSS, JavaScript</li><li>React, Vue, Svelte en version statique</li><li>Astro, Hugo, Jekyll, Eleventy</li><li class="no">Pas de serveur : ni PHP, ni Python, ni base</li></ul>
   </section>
   <section class="tile reveal">
     <div class="tile-head"><h2>En bref</h2></div>
     <div class="facts">
-      <div class="pros"><h3>Le bon</h3><ul><li>Gratuit, sans date de fin</li><li>Rien à maintenir</li><li>Illisible sans le mot de passe</li></ul></div>
-      <div class="cons"><h3>Le moins bon</h3><ul><li>Le fichier chiffré reste public</li><li>Personne ne peut écrire</li><li>Un seul mot de passe pour tous</li></ul></div>
+      <div class="pros"><h3>Le bon</h3><ul><li>Gratuit, sans date de fin</li><li>Rien à maintenir</li><li>Chiffré, il résiste même en public</li></ul></div>
+      <div class="cons"><h3>Le moins bon</h3><ul><li>Toute la page est publique et modifiable</li><li>Personne ne peut écrire</li><li>Un seul mot de passe pour tous</li></ul></div>
     </div>
   </section>
 </main>
 <p class="foot">La même mini-app, sur trois hébergeurs.</p>
-<script>window.DEMO = { mode: "static", login: "none", encrypted: true };</script>
+<script>window.DEMO = { mode: "static", login: "none", gate: "f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb", encrypted: true };</script>
 <script src="app.js"></script>
 </body>
 </html>
