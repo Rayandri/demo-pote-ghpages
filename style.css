@@ -289,3 +289,16 @@ main { max-width: 980px; margin: 0 auto; padding: 0 22px 96px; }
   .pi-facts { gap: 10px; }
   .pi-facts dd { font-size: 15px; }
 }
+
+/* Une ambiance par version */
+body[data-host="ghpages"]   { --bg: #f2f9f4; --tile: #e6f4ea; }
+body[data-host="raspberry"] { --bg: #fdf4f7; --tile: #f9e6ee; }
+body[data-host="vercel"] {
+  --bg: #000; --tile: #111113; --surface: #1c1c1e; --text: #f5f5f7; --muted: #a1a1a6; --faint: #6e6e73;
+  --line: #2c2c2e; --accent: #f5f5f7; --on-accent: #000; --ok: #30d158; --ko: #ff453a;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) {
+  body[data-host="ghpages"]   { --bg: #03110a; --tile: #0b2014; --surface: #112a1b; }
+  body[data-host="raspberry"] { --bg: #14040a; --tile: #230f18; --surface: #2e1520; }
+}
