@@ -3,56 +3,96 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
 <title>Décisions · GitHub Pages</title>
+<link rel="preload" href="fonts/instrument-serif.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="style.css">
-<style>
-.gate input { font-size: 1.6rem; letter-spacing: .5em; text-align: center; max-width: 200px; }
-.levels { margin: 0; padding-left: 20px; }
-.levels li { margin-bottom: 10px; }
-code.hash { word-break: break-all; font-size: .8rem; }
-.crack-out { font-family: ui-monospace, monospace; font-size: .9rem; margin-top: 8px; min-height: 1.4em; }
-</style>
 </head>
-<body>
+<body data-host="ghpages">
 <div class="wrap">
-  <div class="host"><span class="badge">GitHub Pages</span><span>Fichiers statiques servis par GitHub</span> <a href="https://demo-pote-hub.vercel.app">← retour au comparatif</a></div>
-  <h1>Carnet de décisions</h1>
-  <p class="sub">La même mini-app sur les trois hébergeurs. Ici : un site statique, données dans un fichier.</p>
-  <div class="card proscons">
-    <div class="pro"><h3>Avantages</h3><ul><li>Gratuit, sans limite de durée</li><li>Rien à maintenir : pas de serveur</li><li>Les données sont versionnées dans git (historique de chaque modif)</li><li>Si GitHub ferme, on redéploie ailleurs en 5 minutes</li></ul></div>
-    <div class="con"><h3>Défauts</h3><ul><li>Le site est forcément public (même avec un compte payant)</li><li>Pas de vraie connexion : le « code » se vérifie dans ton navigateur</li><li>Lecture seule : personne ne peut voter ni ajouter depuis le site</li><li>Modifier les données = éditer un fichier sur GitHub</li></ul></div>
-  </div>
+  <header class="masthead">
+    <a class="back" href="https://demo-pote-hub.vercel.app"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M14 8H3M7 4 3 8l4 4"/></svg>Comparatif</a>
+    <p class="edition">Carnet de décisions — 01/03</p>
+    <p class="live"><span class="live-dot" aria-hidden="true"></span><span class="live-host">GitHub Pages</span><span class="live-ms" data-latency>statique</span></p>
+  </header>
 
-  <div id="gate" class="card gate">
-    <h2>🔒 Entre le code</h2>
-    <form id="gate-form">
-      <input id="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="••••" required autocomplete="off">
-      <button class="primary">Entrer</button>
-      <div class="error" id="gate-err"></div>
-    </form>
-  </div>
+  <section class="hero">
+    <p class="kicker rise d1">Édition 01 · <b>Site statique</b></p>
+    <h1 class="display rise d2">GitHub <em>Pages</em></h1>
+    <p class="lede rise d3">Un site statique. Les données sont dans un fichier.</p>
+  </section>
 
-  <div id="app"></div>
+  <dl class="specs rise d4">
+    <div><dt class="kicker">Stockage</dt><dd><code>data.json</code> dans le repo</dd></div>
+    <div><dt class="kicker">Lecture</dt><dd><span class="yes">Oui</span>par tout le monde</dd></div>
+    <div><dt class="kicker">Écriture</dt><dd><span class="no">Non</span>à la main, sur GitHub</dd></div>
+    <div><dt class="kicker">Qui entre</dt><dd>Tout le monde<small>Le code se vérifie dans le navigateur.</small></dd></div>
+  </dl>
 
-  <div class="card">
-    <h2>Comment ce code protège la page ? (spoiler : pas vraiment)</h2>
+  <section class="section" aria-labelledby="bilan">
+    <div class="section-head"><p class="kicker">02 — Bilan</p><h2 class="display-sm" id="bilan">Le pour et <em>le contre</em></h2></div>
+    <div class="ledger">
+      <div class="pro"><h3><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 1v10M1 6h10"/></svg>Avantages</h3>
+        <ul><li>Gratuit, sans limite de durée.</li><li>Pas de serveur, rien à maintenir.</li><li>Chaque modif des données est gardée dans git.</li></ul></div>
+      <div class="con"><h3><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M1 6h10"/></svg>Défauts</h3>
+        <ul><li>Le site est forcément public, même en payant.</li><li>Le code se vérifie dans ton navigateur, pas sur un serveur.</li><li>Lecture seule : on édite les données à la main.</li></ul></div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="demo">
+    <div class="section-head"><p class="kicker">03 — La démo</p><h2 class="display-sm" id="demo">Une mini-app, <em>une base-fichier</em></h2></div>
+    <p class="demo-banner"><span class="tag">Mini-app de démo</span><span>Lire et écrire dans une base. Ici, la base est un fichier : lecture seule.</span></p>
+
+    <div id="gate" class="gate">
+      <div>
+        <p class="kicker">Porte · code à 4 chiffres</p>
+        <h3 class="display-sm">Entre le <em>code</em></h3>
+        <p class="gate-hint">Pas le code ? <a href="#crack">Casse-le plus bas.</a></p>
+      </div>
+      <form id="gate-form" class="gate-form">
+        <label class="sr-only" for="pin">Code à 4 chiffres</label>
+        <input id="pin" class="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="····" required autocomplete="off">
+        <button class="btn btn-primary">Entrer <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+        <div class="error" id="gate-err" role="alert"></div>
+      </form>
+    </div>
+
+    <div id="app"></div>
+  </section>
+
+  <section class="section" aria-labelledby="capot">
+    <div class="section-head"><p class="kicker">04 — Sous le capot</p><h2 class="display-sm" id="capot">Ce code protège-t-il&nbsp;? <small>Spoiler : non.</small></h2></div>
     <ol class="levels">
-      <li><strong>Code en clair dans le HTML</strong> : clic droit → « Inspecter », et on le lit directement. Zéro protection.</li>
-      <li><strong>Code haché (ce qu'on fait ici)</strong> : la page ne contient que l'empreinte SHA-256 du code,
-        <code class="hash">f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb</code>. On ne peut pas « inverser » un hash… mais avec 4 chiffres il n'y a que
-        10 000 possibilités : on les essaie toutes en une fraction de seconde.
-        <div class="actions"><button id="crack">💥 Casser le code</button></div>
-        <div class="crack-out" id="crack-out"></div></li>
-      <li><strong>Et de toute façon</strong> : le hash protège la <em>porte</em>, pas le contenu. Les données sont dans
-        <a href="data.json"><code>data.json</code></a>, lisible par n'importe qui, comme tout le repo GitHub.</li>
+      <li><p><strong>Code en clair dans le HTML.</strong> Clic droit, « Inspecter », et on le lit. Zéro protection.</p></li>
+      <li>
+        <p><strong>Code haché (ce qu'on fait ici).</strong> La page ne contient que l'empreinte SHA-256 du code :</p>
+        <p><code class="hash">f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb</code></p>
+        <p>Un hash ne s'inverse pas. Mais 4 chiffres, c'est 10 000 essais, faits en une fraction de seconde.</p>
+        <div class="crack">
+          <div class="crack-row">
+            <button id="crack" class="btn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0M3.5 7h9v6.5h-9zM8 9.5v1.5"/></svg>Casser le code</button>
+            <output class="odometer" id="crack-odo" aria-hidden="true">0000</output>
+          </div>
+          <div class="crack-bar" id="crack-bar" aria-hidden="true"></div>
+          <p class="crack-out" id="crack-out" aria-live="polite"></p>
+        </div>
+      </li>
+      <li><p><strong>Et de toute façon…</strong> Le hash protège la <em>porte</em>, pas le contenu. Les données sont dans
+        <a href="data.json"><code>data.json</code></a>, lisible par tous, comme tout le repo.</p></li>
     </ol>
-    <p class="meta">Conclusion : sur GitHub Pages, tout est public. Parfait pour une vitrine ou une démo, jamais pour du confidentiel.
-      Pour une vraie connexion, il faut un serveur qui vérifie le mot de passe — voir les versions Vercel et Raspberry.</p>
-  </div>
+    <p class="conclusion">Sur GitHub Pages, tout est public. Parfait pour une vitrine, jamais pour du confidentiel.
+      Une vraie connexion demande un serveur : voir Vercel et Raspberry.</p>
+  </section>
+
+  <footer class="colophon">
+    <p>Instrument Serif, Inter Tight, JetBrains Mono — polices servies par ce site.</p>
+    <p>Servi par GitHub Pages · <a href="https://demo-pote-hub.vercel.app">Retour au comparatif</a></p>
+  </footer>
 </div>
 <script>
 window.DEMO = { mode: "static", login: "none" };
 const PIN_HASH = "f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb"; // SHA-256 du code à 4 chiffres, visible par tous
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 async function sha256(text) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
@@ -60,29 +100,67 @@ async function sha256(text) {
 }
 
 function unlock() {
-  document.getElementById("gate").remove();
-  const s = document.createElement("script");
-  s.src = "app.js";
-  document.body.appendChild(s);
+  const gate = document.getElementById("gate");
+  const load = () => {
+    gate.remove();
+    const s = document.createElement("script");
+    s.src = "app.js";
+    document.body.appendChild(s);
+  };
+  if (reduceMotion) return load();
+  gate.classList.add("is-open");
+  setTimeout(load, 340);
 }
+
+const gateEl = document.getElementById("gate");
+gateEl.addEventListener("animationend", () => gateEl.classList.remove("is-wrong"));
 
 document.getElementById("gate-form").onsubmit = async (e) => {
   e.preventDefault();
   const pin = document.getElementById("pin").value;
   if ((await sha256(pin)) === PIN_HASH) unlock();
-  else document.getElementById("gate-err").textContent = "Mauvais code";
+  else {
+    document.getElementById("gate-err").textContent = "Mauvais code";
+    gateEl.classList.remove("is-wrong");
+    void gateEl.offsetWidth;
+    gateEl.classList.add("is-wrong");
+  }
 };
+
+// Rejoue visuellement le défilé 0000 → code trouvé (le chrono affiché reste celui du vrai calcul).
+function replay(target, done) {
+  const odo = document.getElementById("crack-odo");
+  const bar = document.getElementById("crack-bar");
+  const show = (n) => {
+    odo.textContent = String(n).padStart(4, "0");
+    bar.style.setProperty("--p", n / 9999);
+  };
+  if (reduceMotion) { show(target); return done(); }
+  const dur = 900 + target / 12, t0 = performance.now();
+  const step = (t) => {
+    const k = Math.min(1, (t - t0) / dur);
+    show(Math.round(target * (1 - Math.pow(1 - k, 3))));
+    if (k < 1) requestAnimationFrame(step); else done();
+  };
+  requestAnimationFrame(step);
+}
 
 document.getElementById("crack").onclick = async () => {
   const out = document.getElementById("crack-out");
+  const odo = document.getElementById("crack-odo");
+  odo.classList.remove("is-found");
   out.textContent = "Essai de 0000 à 9999…";
   const t0 = performance.now();
   for (let i = 0; i < 10000; i++) {
     const pin = String(i).padStart(4, "0");
     if ((await sha256(pin)) === PIN_HASH) {
       const ms = Math.round(performance.now() - t0);
-      out.textContent = `Trouvé : ${pin} — après ${i + 1} essais, en ${ms} ms.`;
-      document.getElementById("pin").value = pin;
+      replay(i, () => {
+        odo.classList.add("is-found");
+        out.textContent = `Trouvé : ${pin} — après ${i + 1} essais, en ${ms} ms.`;
+        const input = document.getElementById("pin");
+        if (input) input.value = pin;
+      });
       return;
     }
   }
