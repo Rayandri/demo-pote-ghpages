@@ -1,5 +1,5 @@
 // Un site, trois maisons — le même front pour les trois versions.
-// window.DEMO = { mode: "api" | "static", login: "password" | "none", greeting?: string, gate?: sha256 }
+// window.DEMO = { mode: "api" | "static", login: "password" | "none", greeting?: string, encrypted?: true, hint?: string }
 // CSP Raspberry : aucun style inline ; seules les propriétés CSSOM (el.style.x) sont utilisées.
 (() => {
   const cfg = window.DEMO || { mode: "api", login: "none" };
@@ -37,89 +37,80 @@
     : null;
   document.querySelectorAll(".reveal").forEach((el) => (io ? io.observe(el) : el.classList.add("in")));
 
-  // ── Écran de verrouillage (GitHub Pages) ──
-  async function sha256(text) {
-    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
-    return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
+  // ── Coffre chiffré (GitHub Pages) ──
+  // Les mots sont chiffrés avec le mot de passe (PBKDF2 → AES-GCM). Sans lui : du charabia.
+  const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  let vault = null;
+  let notesPlain = null;
+  async function tryPassword(pw) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pw), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({ name: "PBKDF2", salt: b64(vault.salt), iterations: vault.iter, hash: "SHA-256" },
+      base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(vault.iv) }, key, b64(vault.data));
+    return JSON.parse(new TextDecoder().decode(plain));
   }
+  const sup = (n) => String(n).replace(/[0-9-]/g, (d) => "⁰¹²³⁴⁵⁶⁷⁸⁹"["0123456789".indexOf(d)] ?? "⁻");
+  const sci = (x) => { const e = Math.floor(Math.log10(x)); return `${(x / 10 ** e).toFixed(1).replace(".", ",")} × 10${sup(e)}`; };
 
-  function renderLock() {
-    let code = "";
-    let busy = false;
+  async function renderVault() {
+    vault = await (await fetch("data.enc.json", { cache: "no-store" })).json();
+    const peek = document.getElementById("cipher");
+    if (peek) peek.textContent = vault.data.slice(0, 64) + "…";
     app.innerHTML = `
-      <div class="lock">
-        <h3>Entre le code</h3>
-        <div class="dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
-        <div class="keypad">
-          ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button class="key" data-k="${n}">${n}</button>`).join("")}
-          <button class="key zero" data-k="0">0</button>
-          <button class="key ghost" data-k="del">Effacer</button>
-        </div>
-        <div class="crack">
-          <button class="link" id="crack">Pas le code ? Le casser</button>
-          <div class="crack-out" id="crack-out" aria-live="polite"></div>
-        </div>
-      </div>`;
-    const dots = [...app.querySelectorAll(".dots span")];
-    const paint = () => dots.forEach((d, i) => d.classList.toggle("on", i < code.length));
-
-    async function press(k) {
-      if (busy) return;
-      if (k === "del") code = code.slice(0, -1);
-      else if (code.length < 4) code += k;
-      paint();
-      if (code.length === 4) {
-        busy = true;
-        if ((await sha256(code)) === cfg.gate) return setTimeout(openNotebook, 250);
-        const box = $(".dots", app);
-        box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-        setTimeout(() => { code = ""; paint(); busy = false; }, 450);
+      <form class="signin" id="vault">
+        <input name="password" type="password" placeholder="Mot de passe (20 caractères)" required autocomplete="off" aria-label="Mot de passe">
+        <button class="btn">Ouvrir</button>
+        <div class="hint" id="vault-hint"></div>
+        <button type="button" class="link" id="crack">Essayer de le casser</button>
+        <div class="crack-out" id="crack-out" aria-live="polite"></div>
+      </form>`;
+    const form = $("#vault"), hint = $("#vault-hint");
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = $(".btn", form);
+      btn.disabled = true;
+      hint.classList.remove("err");
+      hint.textContent = "Déchiffrement…";
+      try {
+        notesPlain = (await tryPassword(new FormData(form).get("password"))).notes;
+        openNotebook();
+      } catch {
+        hint.classList.add("err");
+        hint.textContent = "Mauvais mot de passe.";
+        form.classList.remove("shake"); void form.offsetWidth; form.classList.add("shake");
+        btn.disabled = false;
       }
-    }
-    app.querySelectorAll(".key").forEach((b) => b.addEventListener("click", () => press(b.dataset.k)));
-    const onKey = (e) => {
-      if (!$(".lock", app)) return document.removeEventListener("keydown", onKey);
-      if (/^[0-9]$/.test(e.key)) press(e.key);
-      else if (e.key === "Backspace") press("del");
-    };
-    document.addEventListener("keydown", onKey);
-
+    });
     $("#crack").addEventListener("click", async (e) => {
-      if (busy) return;
-      busy = true;
       e.currentTarget.disabled = true;
       const out = $("#crack-out");
-      out.textContent = "On essaie les 10 000 codes…";
-      // 1. Le vrai calcul.
+      const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const t0 = performance.now();
-      let found = null;
-      for (let i = 0; i < 10000; i++) {
-        const c = String(i).padStart(4, "0");
-        if ((await sha256(c)) === cfg.gate) { found = c; break; }
+      let tries = 0;
+      while (performance.now() - t0 < 4000) {
+        let guess = "";
+        for (let i = 0; i < 20; i++) guess += chars[(Math.random() * 62) | 0];
+        out.innerHTML = `<b class="guess">${guess}</b>${tries} essais`;
+        try { await tryPassword(guess); } catch { /* raté, évidemment */ }
+        tries++;
       }
-      const ms = performance.now() - t0;
-      if (!found) { out.textContent = "Pas trouvé."; return; }
-      // 2. On le rejoue à l'écran.
-      for (let s = 1; s <= 40; s++) {
-        const n = Math.round((Number(found) * s) / 40);
-        out.innerHTML = `<b>${String(n).padStart(4, "0")}</b>essai ${(n + 1).toLocaleString("fr-FR")} sur 10 000`;
-        await new Promise((r) => setTimeout(r, 22));
-      }
-      const t = ms < 1000 ? Math.max(1, Math.round(ms)) + " ms" : (ms / 1000).toFixed(1).replace(".", ",") + " s";
-      out.innerHTML = `<b>${found}</b>Trouvé en ${t}. Ce cadenas ne protégeait rien.`;
-      code = found; paint();
-      setTimeout(openNotebook, 1800);
+      const rate = tries / ((performance.now() - t0) / 1000);
+      const years = 62 ** 20 / 2 / rate / 31557600;
+      out.innerHTML = `<b>${tries} essais. Raté.</b>Il en faudrait ${sci(62 ** 20)}.<br>À ce rythme : ${sci(years)} années.<br>L'univers a 1,4 × 10¹⁰ ans.`;
     });
   }
 
   // ── Connexion (Vercel) ──
+  let fails = 0;
   function renderSignin(err) {
+    const showHint = fails >= 3 && cfg.hint;
     app.innerHTML = `
       <form class="signin" id="signin">
         <input name="name" placeholder="Ton prénom" required maxlength="40" autocomplete="username" aria-label="Ton prénom">
-        <input name="password" type="password" placeholder="Mot de passe" required autocomplete="current-password" aria-label="Mot de passe">
+        <input name="password" type="password" placeholder="${esc(cfg.question || "Mot de passe")}" required autocomplete="current-password" aria-label="Mot de passe">
         <button class="btn">Entrer</button>
         <div class="hint ${err ? "err" : ""}">${esc(err || "")}</div>
+        ${showHint ? `<div class="tip">Indice : ${esc(cfg.hint)}</div>` : ""}
       </form>`;
     const form = $("#signin");
     if (err) form.classList.add("shake");
@@ -128,16 +119,21 @@
       const f = new FormData(form);
       try {
         me = (await api("api/login", { name: f.get("name"), password: f.get("password") })).user;
+        fails = 0;
         openNotebook();
       } catch (ex) {
+        if (ex.status === 401) fails++;
         renderSignin(ex.message);
+        const name = $("input[name=name]", app);
+        name.value = f.get("name");
+        $("input[name=password]", app).focus();
       }
     });
   }
 
   // ── Le carnet ──
   async function loadNotes() {
-    if (cfg.mode === "static") return (await (await fetch("data.json", { cache: "no-store" })).json()).notes;
+    if (cfg.mode === "static") return notesPlain || [];
     return (await api("api/notes")).notes;
   }
 
@@ -158,7 +154,7 @@
           <textarea name="text" rows="1" maxlength="280" placeholder="${readOnly ? "Impossible d'écrire ici" : "Écris un mot…"}" ${readOnly ? "disabled" : ""} aria-label="Ton mot"></textarea>
           <button class="btn" ${readOnly ? "disabled" : ""}>Publier</button>
         </form>
-        <div class="hint" id="hint">${readOnly ? "Pas de serveur, donc rien ne peut être enregistré." : "Publie un mot, recharge la page : il est toujours là."}</div>
+        <div class="hint" id="hint">${readOnly ? "Déchiffré dans ton navigateur. Mais pas de serveur : impossible d'écrire." : "Publie un mot, recharge la page : il est toujours là."}</div>
         <ul class="notes" id="notes"><li class="skeleton"></li><li class="skeleton"></li></ul>
       </div>`;
 
@@ -205,8 +201,23 @@
     app.innerHTML = `<p class="empty">Accès refusé.</p>`;
   }
 
+  // ── Infos en direct de la Raspberry ──
+  async function piStats() {
+    try {
+      const pi = await api("api/pi");
+      const d = Math.floor(pi.uptime_s / 86400), h = Math.floor((pi.uptime_s % 86400) / 3600);
+      const up = d ? `${d} jour${d > 1 ? "s" : ""} et ${h} h` : `${h} h ${Math.floor((pi.uptime_s % 3600) / 60)} min`;
+      const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.textContent = v; };
+      set("pi-model", pi.model);
+      set("pi-mem", pi.mem_gb);
+      set("pi-up", up);
+      set("pi-temp", pi.temp_c != null ? `${String(pi.temp_c).replace(".", ",")} °C` : null);
+    } catch { /* pas grave : on garde le texte par défaut */ }
+  }
+
   async function start() {
-    if (cfg.gate) return renderLock();
+    if (cfg.piStats) { piStats(); setInterval(piStats, 30000); }
+    if (cfg.encrypted) return renderVault();
     if (cfg.mode === "api") {
       try {
         me = (await api("api/me")).user;

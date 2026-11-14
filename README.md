@@ -1,4 +1,3 @@
 # Démo GitHub Pages
 
-Site 100 % statique : tout ce qui est dans ce repo est public, y compris `data.json` et le hash du code d'accès.
-C'est voulu : la page explique pourquoi un code vérifié dans le navigateur ne protège rien.
+Site statique : tout ce repo est public. Les notes sont dans `data.enc.json`, chiffrées (PBKDF2-SHA256 200 000 itérations, AES-256-GCM). Sans le mot de passe, elles sont illisibles.

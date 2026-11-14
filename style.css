@@ -217,3 +217,75 @@ main { max-width: 980px; margin: 0 auto; padding: 0 22px 96px; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Indice, essais, chiffré */
+.signin .tip { font-size: 15px; color: var(--accent); font-weight: 500; animation: noteIn .5s var(--ease) both; }
+.crack-out b.guess { font: 500 15px/1.4 ui-monospace, "SF Mono", Menlo, monospace; letter-spacing: .02em; overflow-wrap: anywhere; color: var(--text); }
+.signin .link { justify-self: center; margin-top: 4px; }
+#cipher { display: block; margin-top: 8px; font: 12px/1.4 ui-monospace, "SF Mono", Menlo, monospace; color: var(--muted); overflow-wrap: anywhere; }
+
+/* Mobile : compact, peu de défilement */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .nav { padding: 10px 16px; }
+  .hero { padding: 28px 16px 20px; }
+  .eyebrow { font-size: 15px; margin-bottom: 4px; }
+  .hero h1 { font-size: 38px; }
+  .hero p.sub { font-size: 17px; margin-top: 10px; }
+  main { padding: 0 12px 40px; }
+  .tile { padding: 22px 18px; border-radius: 22px; margin-bottom: 12px; }
+  .tile-head { margin-bottom: 18px; }
+  .tile-head h2 { font-size: 24px; }
+  .tile-head p { font-size: 15px; margin-top: 6px; }
+  .hello { margin: 0 0 16px; }
+  .hello strong { font-size: 18px; }
+  .note { padding: 14px 16px; border-radius: 16px; }
+  .note p { font-size: 16px; }
+  .notes { margin-top: 16px; gap: 8px; }
+  .steps { gap: 8px; }
+  .step { display: flex; gap: 14px; align-items: flex-start; padding: 14px 16px; border-radius: 16px; }
+  .step b { font-size: 22px; margin: 0; min-width: 16px; }
+  .step p { font-size: 15px; }
+  .facts { gap: 18px; }
+  .facts h3 { margin-bottom: 10px; }
+  .facts ul { gap: 8px; }
+  .facts li { font-size: 15px; }
+  .facts li::before { width: 18px; height: 18px; }
+  .foot { padding: 8px 16px 28px; }
+}
+
+/* Raspberry Pi dessinée */
+.board { width: 100%; max-width: 340px; height: auto; overflow: visible; }
+.board .pcb { fill: #1f8f55; }
+.board .hole { fill: var(--tile); stroke: #d8b25a; stroke-width: 2.5; }
+.board .pin { fill: #d8b25a; }
+.board .ram { fill: #26262a; }
+.board .soc { fill: #c9ccd2; }
+.board .soc-in { fill: #b3b7be; }
+.board .soc-t { font: 600 11px ui-monospace, Menlo, monospace; fill: #4a4d55; text-anchor: middle; dominant-baseline: middle; }
+.board .port { fill: #d9dbe0; stroke: #a6a9b0; stroke-width: 1.5; }
+.board .port.eth { fill: #c3c6cc; }
+.board .trace { fill: none; stroke: #7fe0a8; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 6 10; opacity: .8; animation: data 1.4s linear infinite; }
+.board .t2 { animation-duration: 1.9s; } .board .t3 { animation-duration: 1.1s; }
+.board .led.on { fill: #4cff8f; animation: blink 1.2s steps(2, jump-none) infinite; }
+.board .led.pwr { fill: #ff4d4d; }
+.board .berry circle { fill: #e3175d; } .board .berry .leaf { fill: #7fe0a8; }
+.board-float { animation: float 6s ease-in-out infinite; transform-origin: center; }
+@keyframes data { to { stroke-dashoffset: -32; } }
+@keyframes blink { 0% { opacity: 1; } 50% { opacity: .15; } }
+@keyframes float { 50% { transform: translateY(-6px) rotate(-1deg); } }
+
+/* Fiche de la Raspberry */
+.pi-card { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; }
+.pi-art { display: grid; place-items: center; }
+.pi-facts { margin: 0; display: grid; gap: 16px; }
+.pi-facts dt { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+.pi-facts dd { margin: 2px 0 0; font-size: 17px; line-height: 1.35; }
+.pi-facts .live { font-weight: 600; font-variant-numeric: tabular-nums; }
+.crack-out:empty { min-height: 0; margin: 0; }
+@media (max-width: 640px) {
+  .pi-card { grid-template-columns: 1fr; gap: 14px; }
+  .pi-art .board { max-width: 230px; }
+  .pi-facts { gap: 10px; }
+  .pi-facts dd { font-size: 15px; }
+}

@@ -11,27 +11,27 @@
 <header class="hero">
   <p class="eyebrow reveal">GitHub Pages</p>
   <h1 class="reveal d1">Gratuit. Pour toujours.</h1>
-  <p class="sub reveal d2">Mais tout ce qui est en ligne est public.</p>
+  <p class="sub reveal d2">Tout est public. Sauf ce qu'on chiffre.</p>
 </header>
 <main>
   <section class="tile reveal d3">
-    <div class="tile-head"><h2>Le carnet partagé</h2><p>Un code protège la page. En apparence.</p></div>
+    <div class="tile-head"><h2>Le carnet partagé</h2><p>Les mots sont chiffrés. Seul le mot de passe les ouvre.</p></div>
     <div id="app"><div class="notebook"><ul class="notes"><li class="skeleton"></li><li class="skeleton"></li></ul></div></div>
   </section>
   <section class="tile reveal">
-    <div class="tile-head"><h2>Pourquoi ce code ne sert à rien</h2></div>
-    <div class="steps"><div class="step"><b>1</b><p>Le code est vérifié dans ton navigateur.</p></div><div class="step"><b>2</b><p>Son empreinte est écrite dans la page.</p></div><div class="step"><b>3</b><p>10 000 essais suffisent. Moins d'une seconde.</p></div></div>
+    <div class="tile-head"><h2>Public, mais illisible</h2></div>
+    <div class="steps"><div class="step"><b>1</b><p>N'importe qui peut télécharger le fichier.</p></div><div class="step"><b>2</b><p>Mais il est chiffré : <code id="cipher">…</code></p></div><div class="step"><b>3</b><p>Sans le mot de passe : des milliards d'années.</p></div></div>
   </section>
   <section class="tile reveal">
     <div class="tile-head"><h2>En bref</h2></div>
     <div class="facts">
-      <div class="pros"><h3>Le bon</h3><ul><li>Gratuit, sans date de fin</li><li>Rien à maintenir</li><li>Se déménage en cinq minutes</li></ul></div>
-      <div class="cons"><h3>Le moins bon</h3><ul><li>Tout est public, même le code</li><li>Personne ne peut écrire</li><li>Pas de vrais comptes</li></ul></div>
+      <div class="pros"><h3>Le bon</h3><ul><li>Gratuit, sans date de fin</li><li>Rien à maintenir</li><li>Illisible sans le mot de passe</li></ul></div>
+      <div class="cons"><h3>Le moins bon</h3><ul><li>Le fichier chiffré reste public</li><li>Personne ne peut écrire</li><li>Un seul mot de passe pour tous</li></ul></div>
     </div>
   </section>
 </main>
 <p class="foot">La même mini-app, sur trois hébergeurs.</p>
-<script>window.DEMO = { mode: "static", login: "none", gate: "f6563999cf206aa7c0113c3378785452f0950c37bf22742c5b8cf79ac3d2e2fb" };</script>
+<script>window.DEMO = { mode: "static", login: "none", encrypted: true };</script>
 <script src="app.js"></script>
 </body>
 </html>
